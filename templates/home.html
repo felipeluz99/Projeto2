@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Página inicial</title>
+  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles/style.css') }}">
+  <style>
+  
+    .mapa-iframe {
+      width: 300px; 
+      height: 300px; 
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <div class="cabecalho">
+    <h1>Sistema de Controle</h1>
+    <a href="/settings">Configurações</a>
+  </div>
+  <div class="modo">
+    <h2>Modo</h2>
+    <p id="modo">{{ estado[3].modo }}</p>
+    {% if estado[3].modo == "auto" %}
+      <a href="/altera_modo/{{ estado[3].modo }}">On</a>
+    {% else %}
+      <a href="/altera_modo/{{ estado[3].modo }}">Off</a>
+    {% endif %}
+  </div>
+  <div class="luzes">
+    <h2>Luzes</h2>
+    {% for luz, estado_luz in estado[0].luzes[0].items() %}
+      <p>{{ luz }}: <a href="altera_luz/{{ luz }}/{{ estado_luz }}" id="{{ luz }}">{{ estado_luz }}</a></p>
+    {% endfor %}
+  </div>
+  <div class="info">
+    <div class="temperatura">
+      <h2>Temperatura</h2>
+      <h1 id="temperatura">{{ estado[1].temperatura }}°C</h1>
+      <a href="/altera_temp/{{ estado[1].temperatura }}/up">Aumentar</a>
+      <a href="/altera_temp/{{ estado[1].temperatura }}/down">Diminuir</a>
+    </div>
+    <div class="umidade">
+      <h2>Umidade</h2>
+      <h1 id="umidade">{{ previsao.umidade }}%</h1>
+      <h3>Janela: <a href="/altera_janela/{{ estado[2].janela }}" id="janela">{{ estado[2].janela }}</a></h3>
+    </div>
+  </div>
+  <div class="previsao">
+    <h2>Previsão do tempo</h2>
+    <h3 id="cidade">{{ previsao.cidade }}</h3>, <h3 id="data">{{ previsao.data }}</h3>
+    <div class="previsao-conteudo">
+      <img id="tipo-tempo-img" src="/static/pics/{{ 'tempo_aberto.png' if previsao.tipo_tempo == 'Clear' else 'tempo_nublado.png' if previsao.tipo_tempo == 'Cloudy' else 'tempo_chuvoso.png' }}" width=100px height=100px>
+      <div class="temp-atual" id="temp-atual">{{ previsao.temp_atual }}°C</div>
+      <div class="temp-extremas">
+        <h4 id="temp-max">Máx {{ previsao.temp_max }}°C</h4>
+        <h4 id="temp-min">Mín {{ previsao.temp_min }}°C</h4>
+      </div>
+    </div>
+  </div>
+
+  <div class="mapa-iframe">
+    <iframe src="{{ url_for('static', filename='mapa_tempo.html') }}" frameborder="0"></iframe>
+  </div>
+
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.min.js"></script>
+<script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>

@@ -1,0 +1,165 @@
+body {
+  font-family: 'Arial', sans-serif;
+}
+
+.container {
+  width: 500px;
+  margin: 0 auto;
+  padding: 20px;
+  border: 2px solid #ccc;
+  border-radius: 10px;
+  background-color: #f9f9f9;
+}
+
+.cabecalho {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.cabecalho h1 {
+  font-size: 24px;
+  font-weight: bold;
+  text-transform: uppercase;
+  color: #333333;
+}
+
+.cabecalho a {
+  font-size: 18px;
+  color: #007bff;
+  text-decoration: none;
+}
+
+.modo {
+  float: right;
+}
+
+.modo h2 {
+  font-size: 20px;
+  font-weight: bold;
+  color: #333333;
+}
+
+.modo p {
+  font-size: 16px;
+  color: #666666;
+}
+
+.modo a {
+  font-size: 16px;
+  color: #007bff;
+  text-decoration: none;
+}
+
+.luzes {
+  margin-bottom: 20px;
+}
+
+.luzes h2 {
+  font-size: 20px;
+  font-weight: bold;
+  color: #333333;
+}
+
+.luzes p {
+  font-size: 16px;
+  color: #666666;
+}
+
+.luzes a {
+  font-size: 16px;
+  color: #007bff;
+  text-decoration: none;
+}
+
+.info {
+  display: flex;
+}
+
+.temperatura, .umidade {
+  flex: 1;
+  padding-right: 20px;
+}
+
+.temperatura h2, .umidade h2 {
+  font-size: 20px;
+  font-weight: bold;
+  color: #333333;
+}
+
+.temperatura h3, .umidade h3 {
+  font-size: 16px;
+  color: #666666;
+}
+
+.temperatura a, .umidade a {
+  font-size: 16px;
+  color: #007bff;
+  text-decoration: none;
+}
+
+.previsao {
+  text-align: center;
+  margin-top: 20px;
+}
+
+.previsao h2 {
+  font-size: 20px;
+  font-weight: bold;
+  color: #333333;
+  margin-bottom: 10px; /* Reduz o espaçamento abaixo do título "Previsão do tempo" */
+}
+
+.previsao h3 {
+  display: inline-block; /* Permite que os elementos "cidade" e "data" fiquem lado a lado */
+  font-size: 16px;
+  color: #666666;
+  margin: 0;
+}
+
+.previsao #data {
+  margin-left: 10px; /* Espaço entre cidade e data */
+}
+
+.previsao-conteudo {
+  display: flex;
+  flex-wrap: wrap; /* Permite que os elementos dentro se ajustem conforme o tamanho do conteúdo */
+  justify-content: center; /* Centraliza os itens dentro do flex container */
+  align-items: center; /* Alinha os itens verticalmente */
+}
+
+.previsao img {
+  margin-top: 10px;
+  margin-right: 20px;
+  margin-bottom: 10px; /* Espaçamento entre a imagem e os outros elementos */
+}
+
+.temp-atual {
+  font-size: 36px; /* Reduz o tamanho da fonte do valor da temperatura atual */
+  font-weight: bold;
+  color: #333333;
+  margin-right: 20px;
+}
+
+.temp-extremas {
+  text-align: left;
+}
+
+.temp-extremas h4 {
+  font-size: 14px;
+  color: #666666;
+  margin: 2px 0;
+}
+.mapa-iframe {
+  width: 150%; /* Ajuste a largura conforme necessário */
+  text-align: center; /* Para centralizar horizontalmente */
+  margin-bottom: 0px; /* Espaçamento inferior */
+  margin-left: 100px;
+  margin-top:20px;
+}
+
+.mapa-iframe iframe {
+  width: 100%; /* Utiliza 100% da largura do contêiner pai */
+  height: 250px; /* Ajuste a altura conforme necessário */
+}

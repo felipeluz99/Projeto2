@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mapa do Tempo</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+<style>
+    
+    body, html {
+        height: 100%;
+        margin: 0;
+        overflow: hidden;
+    }
+
+    #map {
+        height: 100%; 
+    }
+
+   
+    .blue-overlay {
+        filter: saturate(200%) brightness(120%) hue-rotate(180deg); 
+    }
+
+    
+    .precipitation-outline {
+        -webkit-filter: contrast(200%);
+        filter: contrast(200%);
+        opacity: 0.7; 
+    }
+</style>
+</head>
+<body>
+<div id="map"></div>
+
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+<script>
+    var map = L.map('map').setView([-22.90, -43.196388], 11); 
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19
+    }).addTo(map);
+
+    
+    var precipitationLayer = L.tileLayer('https://tile.openweathermap.org/map/precipitation_new/{z}/{x}/{y}.png?appid=b2e13de0494d15838803adaf4b1182ce', {
+        maxZoom: 19,
+        opacity: 0.8  
+    }).addTo(map);
+
+   
+    var outlineLayer = L.tileLayer('https://tile.openweathermap.org/map/precipitation_new/{z}/{x}/{y}.png?appid=b2e13de0494d15838803adaf4b1182ce', {
+        maxZoom: 19,
+        className: 'precipitation-outline'
+    }).addTo(map);
+</script>
+</body>
+</html>

@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Settings</title>
+  <link rel= "stylesheet" type= "text/css" href= "{{ url_for('static',filename='styles/style.css') }}">
+</head>
+<body>
+  <div class="container">
+    <div class="cabecalho">
+    <h1>Configurações</h1>
+    <a href="/">Página inicial</a>
+    </div>
+    {% if settings != None %}
+    <form action="/salvar" method="post">
+      <p>Temperatura máxima(°C): </p>
+      <input type="number" name="temp_max" value={{settings[0].temp_max}}>
+      <p>Temperatura mínima(°C): </p>
+      <input type="number" name="temp_min" value={{settings[0].temp_min}}>
+      <p>Limite de umidade(%): </p>
+      <input type="number" name="umidade" value={{settings[1].umidade}}>
+      <p>Luzes acendem em:</p>
+      <input type="time" name="horario_acender" value={{settings[2].horario_luzes[0]}}>
+      <p>Luzes apagam em:</p>
+      <input type="time" name="horario_apagar" value={{settings[2].horario_luzes[1]}}>
+      <input type="submit" value="Salvar">
+      </form> 
+    {% else %}
+      <form action="/salvar" method="post">
+        <p>Temperatura máxima(°C): </p>
+        <input type="number" name="temp_max" min=18 max=30>
+        <p>Temperatura mínima(°C): </p>
+        <input type="number" name="temp_min" min=18>
+        <p>Limite de umidade(%): </p>
+        <input type="number" name="umidade" min=0 max=100>
+        <p>Luzes acendem em:</p>
+        <input type="time" name="horario_acender">
+        <p>Luzes apagam em:</p>
+        <input type="time" name="horario_apagar">
+        <input type="submit">
+        </form> 
+    {% endif %}
+  </div>
+</body>
+</html>
