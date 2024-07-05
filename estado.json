@@ -1,22 +1,21 @@
 [
     {
-        "luzes": [
+        "ar": [
             {
-                "Luz sala": "acesa",
-                "Luz cozinha": "apagada",
-                "Luz quarto": "apagada",
-                "Luz banheiro": "acesa"
+                "estado": "1",
+                "temperatura": "-1.0",
+                "modo": "cool"
             }
         ]
     },
     {
-        "temperatura": 24.43
+        "temperatura": 25.63
     },
     {
-        "umidade": 20,
-        "janela": "aberta"
+        "umidade": 63.08,
+        "janela": "fechada"
     },
     {
-        "modo": "manual"
+        "modo": "auto"
     }
 ]

@@ -3,6 +3,8 @@ import paho.mqtt.client as mqtt
 import ssl
 import json
 
+
+
 def salva_estado(estado):
     with open("estado.json", "w") as arq:
         json.dump(estado, arq, indent=4)
@@ -48,19 +50,23 @@ def on_message(client, userdata, message):
     topico = message.topic
     print(f'Tópico: {message.topic}, Mensagem: {mensagem}')
     if topico=="/home/janela":
-        novo = "fechada" if mensagem == "fechada" else "aberta"
+        
         if estado is not None:
-            estado[2]["janela"] = novo
+            if mensagem=="1":
+                estado[2]["janela"] = "aberta"
+            else:
+                estado[2]["janela"] = "fechada"
+      #  estado[2]["janela"] = novo
             salva_estado(estado)
-            print(f"Janela {novo}")
-    elif "Luz" in topico:
-        luz = topico.split("/")[-1]
-        print(luz)
-        novo = "apagada" if mensagem == "apagada" else "acesa"
-        if estado is not None:
-            estado[0]["luzes"][0][luz] = novo
-            salva_estado(estado)
-            print(f"{luz} {novo}")
+            #print(f"Janela {novo}")
+   # elif "Luz" in topico:
+      #  luz = topico.split("/")[-1]
+     #   print(luz)
+    #    novo = "apagada" if mensagem == "apagada" else "acesa"
+     #   if estado is not None:
+      #      estado[0]["luzes"][0][luz] = novo
+      #      salva_estado(estado)
+      #      print(f"{luz} {novo}")
     elif topico=="/home/temperatura":
         if estado is not None:
             mensagem = float(mensagem)
@@ -75,6 +81,21 @@ def on_message(client, userdata, message):
             estado[3]["modo"] = novo
             salva_estado(estado)
             print(f"Modo {novo}")
+    elif topico=="/home/umidade":
+        if estado is not None:
+            mensagem = float(mensagem)
+            estado[2]["umidade"]=mensagem
+            salva_estado(estado)
+    elif topico=="/home/arcondicionado":
+        if estado:
+            lista_mensagem = mensagem.split(" ")
+            ligado = lista_mensagem[0]
+            temperatura = lista_mensagem[1]
+            modo = lista_mensagem[2]
+            estado[0]["ar"][0]["estado"] = ligado
+            estado[0]["ar"][0]["temperatura"] = temperatura
+            estado[0]["ar"][0]["modo"] = modo
+            salva_estado(estado)
 
 def on_disconnect(client, userdata, rc):
     if rc != 0:

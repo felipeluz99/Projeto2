@@ -5,43 +5,57 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Settings</title>
-  <link rel= "stylesheet" type= "text/css" href= "{{ url_for('static',filename='styles/style.css') }}">
+  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles/style.css') }}">
 </head>
 <body>
   <div class="container">
     <div class="cabecalho">
-    <h1>Configurações</h1>
-    <a href="/">Página inicial</a>
+      <h1>Configurações</h1>
+      <a href="/">Página inicial</a>
     </div>
     {% if settings != None %}
-    <form action="/salvar" method="post">
+    <form action="/salvar" method="post" id="settingsForm">
       <p>Temperatura máxima(°C): </p>
-      <input type="number" name="temp_max" value={{settings[0].temp_max}}>
+      <input type="number" name="temp_max" id="temp_max" value=settings[0].temp_max min="18" max="30">
       <p>Temperatura mínima(°C): </p>
-      <input type="number" name="temp_min" value={{settings[0].temp_min}}>
+      <input type="number" name="temp_min" id="temp_min" value=settings[0].temp_min min="18">
       <p>Limite de umidade(%): </p>
-      <input type="number" name="umidade" value={{settings[1].umidade}}>
-      <p>Luzes acendem em:</p>
-      <input type="time" name="horario_acender" value={{settings[2].horario_luzes[0]}}>
-      <p>Luzes apagam em:</p>
-      <input type="time" name="horario_apagar" value={{settings[2].horario_luzes[1]}}>
+      <input type="number" name="umidade" value=settings[1].umidade>
+      <p>Desligar ar se não houver ninguém</p>
+      <input type="checkbox" name="ar_pessoas" id="ar_pessoas" value="1"><br>
+      <p>Fechar janela se chuva: <input type="radio" name="nivel_chuva" id="nivel_chuva" value="alto"> <label for="alto">Alta</label></p><br>
+      <input type="radio" name="nivel_chuva" id="nivel_chuva" value="media"> <label for="media">Média</label>
+      <input type="radio" name="nivel_chuva" id="nivel_chuva" value="baixa"> <label for="baixa">Baixa</label>
       <input type="submit" value="Salvar">
-      </form> 
+    </form>
+    <!--
     {% else %}
-      <form action="/salvar" method="post">
-        <p>Temperatura máxima(°C): </p>
-        <input type="number" name="temp_max" min=18 max=30>
-        <p>Temperatura mínima(°C): </p>
-        <input type="number" name="temp_min" min=18>
-        <p>Limite de umidade(%): </p>
-        <input type="number" name="umidade" min=0 max=100>
-        <p>Luzes acendem em:</p>
-        <input type="time" name="horario_acender">
-        <p>Luzes apagam em:</p>
-        <input type="time" name="horario_apagar">
-        <input type="submit">
-        </form> 
+    <form action="/salvar" method="post" id="settingsForm">
+      <p>Temperatura máxima(°C): </p>
+      <input type="number" name="temp_max" id="temp_max" min="18" max="30">
+      <p>Temperatura mínima(°C): </p>
+      <input type="number" name="temp_min" id="temp_min" min="18">
+      <p>Limite de umidade(%): </p>
+      <input type="number" name="umidade" min="0" max="100">
+      
+    </form>
     {% endif %}
+    -->
   </div>
+  <script>
+  document.addEventListener('DOMContentLoaded', function() {
+      var form = document.getElementById('settingsForm');
+
+      form.addEventListener('submit', function(event) {
+          var tempMax = document.getElementById('temp_max').value;
+          var tempMin = document.getElementById('temp_min').value;
+
+          if (parseInt(tempMin) > parseInt(tempMax)) {
+              alert('A temperatura mínima não pode ser maior que a temperatura máxima.');
+              event.preventDefault();
+          }
+      });
+  });
+  </script>
 </body>
 </html>

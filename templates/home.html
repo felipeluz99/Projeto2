@@ -22,6 +22,7 @@
   </div>
   <div class="modo">
     <h2>Modo</h2>
+
     <p id="modo">{{ estado[3].modo }}</p>
     {% if estado[3].modo == "auto" %}
       <a href="/altera_modo/{{ estado[3].modo }}">On</a>
@@ -29,22 +30,36 @@
       <a href="/altera_modo/{{ estado[3].modo }}">Off</a>
     {% endif %}
   </div>
-  <div class="luzes">
-    <h2>Luzes</h2>
-    {% for luz, estado_luz in estado[0].luzes[0].items() %}
-      <p>{{ luz }}: <a href="altera_luz/{{ luz }}/{{ estado_luz }}" id="{{ luz }}">{{ estado_luz }}</a></p>
-    {% endfor %}
-  </div>
   <div class="info">
     <div class="temperatura">
-      <h2>Temperatura</h2>
-      <h1 id="temperatura">{{ estado[1].temperatura }}°C</h1>
-      <a href="/altera_temp/{{ estado[1].temperatura }}/up">Aumentar</a>
-      <a href="/altera_temp/{{ estado[1].temperatura }}/down">Diminuir</a>
+      <h2>Temperatura do ar</h2>
+      <h1 id="temperatura">{{ estado[0]["ar"][0]["temperatura"] }}°C</h1>
+      <a href="/altera_temp/{{ estado[0]["ar"][0]["temperatura"] }}/up">Aumentar</a>
+      <a href="/altera_temp/{{ estado[0]["ar"][0]["temperatura"] }}/down">Diminuir</a>
+      
+      {% if estado[0]["ar"][0]["estado"] == "1" %}
+      <a href="/altera_modo_ar/{{estado[0]["ar"][0]["estado"]}}">Desligar</a>
+      {% else %}
+      <a href="/altera_modo_ar/{{estado[0]["ar"][0]["estado"]}}">Ligar</a>
+      {% endif %}
+      <form action="/altera_ar" method="post">
+          <input type="radio" id="cool" name="mode" value="cool">
+          <label for="cool">Cool</label><br>
+          <input type="radio" id="dry" name="mode" value="dry" {% if estado[0]["ar"][0]["modo"] == 'dry' %}checked{% endif %}>
+          <label for="dry">Dry</label><br>
+          <input type="radio" id="auto" name="mode" value="auto" {% if estado[0]["ar"][0]["modo"] == 'auto' %}checked{% endif %}>
+          <label for="auto">Auto</label><br>
+          <input type="radio" id="fan" name="mode" value="fan" {% if estado[0]["ar"][0]["modo"] == 'fan' %}checked{% endif %}>
+          <label for="fan">Fan</label><br>
+          <input type="submit" value="Enviar">
+      </form>
+      <h3>Temperatura interna</h3>
+    <h3 id="temp_interna">{{estado[1]["temperatura"]}}</h3>
+      
     </div>
     <div class="umidade">
       <h2>Umidade</h2>
-      <h1 id="umidade">{{ previsao.umidade }}%</h1>
+      <h1 id="umidade">{{ estado[2].umidade }}%</h1>
       <h3>Janela: <a href="/altera_janela/{{ estado[2].janela }}" id="janela">{{ estado[2].janela }}</a></h3>
     </div>
   </div>

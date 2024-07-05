@@ -1,3 +1,4 @@
+from os import PRIO_PGRP
 from flask import Flask, jsonify, render_template, redirect, request
 import json
 import requests
@@ -7,16 +8,16 @@ from threading import Thread
 
 app = Flask(__name__)
 
-
-chave = "b2e13de0494d15838803adaf4b1182ce"
+chave = "fca8a3e3d3decf04f91f9d6ca5317c68"
 lat = -22.90
 long = -43.19
 url = f"https://api.openweathermap.org/data/2.5/weather?lat={lat}&lon={long}&appid={chave}"
 global cliente
 cliente = None
 
+
 def mqtt_setup():
-    
+
     global cliente
     cliente = setup_cliente()
     if cliente:
@@ -38,15 +39,26 @@ def previsao_tempo():
     cidade = dados_tempo["name"]
     umidade = dados_tempo["main"]["humidity"]
     previsao = {
-        "data": data,
-        "cidade": cidade,
-        "tipo_tempo": tipo_tempo,
-        "temp_atual": temp_atual,
-        "temp_max": temp_max,
-        "temp_min": temp_min,
-        "umidade": umidade
-    }
+         "data": data,
+         "cidade": cidade,
+         "tipo_tempo": tipo_tempo,
+         "temp_atual": temp_atual,
+         "temp_max": temp_max,
+         "temp_min": temp_min,
+         "umidade": umidade
+     }
     return previsao
+
+# previsao = {
+#     "data": data,
+#     "cidade": cidade,
+#     "tipo_tempo": tipo_tempo,
+#     "temp_atual": temp_atual,
+#     "temp_max": temp_max,
+#     "temp_min": temp_min,
+#     "umidade": umidade
+# }
+# return previsao
 
 
 def salva_estado(estado):
@@ -77,6 +89,7 @@ def home():
     previsao = previsao_tempo()
     config = config_atual()
     estado = estado_atual()
+    print(estado)
     return render_template("home.html",
                            settings=config,
                            estado=estado,
@@ -95,18 +108,25 @@ def salva():
         temp_max = request.form["temp_max"]
         temp_min = request.form["temp_min"]
         umidade = request.form["umidade"]
-        horario_acender = request.form["horario_acender"]
-        horario_apagar = request.form["horario_apagar"]
+        ar_bool = request.form.get("ar_pessoas", "0")
+       # print(ar_bool)
+        #print(type(ar_bool))
+        #graus = request.form["graus"]
+        #pessoas = request.form["pessoas"]
+        nivel_chuva = request.form["nivel_chuva"]
         preferencias = [{
             "temp_max": temp_max,
             "temp_min": temp_min
         }, {
             "umidade": umidade
         }, {
-            "horario_luzes": [horario_acender, horario_apagar]
+            "controle_ar":  ar_bool
+        },{
+            "nivel_chuva":nivel_chuva
         }]
         with open("settings.json", "w") as arq:
             json.dump(preferencias, arq, indent=4)
+            publish_message(cliente, "/home/config", f"{temp_max} {temp_min} {umidade} {ar_bool} {nivel_chuva}")
     return redirect(request.referrer)
 
 
@@ -126,19 +146,6 @@ def altera_modo(modo):
     return redirect("/")
 
 
-@app.route("/altera_luz/<string:luz>/<string:modo>")
-def altera_luz(luz, modo):
-    novo = "apagada" if modo == "acesa" else "acesa"
-    estado = estado_atual()
-    if estado is not None:
-        estado[0]["luzes"][0][luz] = novo
-        print(f"{luz} {novo}")
-    with open("estado.json", "w") as arq:
-        json.dump(estado, arq, indent=4)
-    publish_message(cliente, f"/home/luzes/{luz}", novo)
-    return redirect("/")
-
-
 @app.route("/altera_temp/<int:temp>/<string:acao>")
 def altera_temp(temp, acao):
     if acao == "up" and temp <= 29:
@@ -149,22 +156,28 @@ def altera_temp(temp, acao):
         print(f"Temperatura diminuída para {temp}")
     estado = estado_atual()
     if estado is not None:
-        estado[1]["temperatura"] = temp
+        estado[0]["ar"][0]["temperatura"] = temp
         salva_estado(estado)
-    publish_message(cliente, "/home/temperatura", temp)
+        
+        publish_message(cliente, "/home/arcondicionado", f'{estado[0]["ar"][0]["estado"]} {estado[0]["ar"][0]["temperatura"]} {estado[0]["ar"][0]["modo"]}')
     return redirect(request.referrer)
 
 
 @app.route("/altera_janela/<string:modo>")
 def altera_janela(modo):
-    novo = "fechada" if modo == "aberta" else "aberta"
+    #novo = "fechada" if modo == "aberta" else  "aberta"
+    if modo == "aberta":
+        novo = "fechada"
+    else:
+        novo = "aberta"
     estado = estado_atual()
     if estado is not None:
         estado[2]["janela"] = novo
         salva_estado(estado)
         print(f"Janela {novo}")
-    publish_message(cliente, "/home/janela", novo)
-    return redirect(request.referrer)
+        msg = 0 if novo=="fechada" else 1
+        publish_message(cliente, "/home/janela", msg)
+    return redirect("/")
 
 
 @app.route("/dados-atualizados")
@@ -174,14 +187,30 @@ def dados_atualizados():
     return jsonify({"previsao": previsao, "estado": estado})
 
 
-@app.route("/teste")
-def teste():
-    return render_template("teste.html")
+@app.route("/altera_modo_ar/<int:ligado>")
+def altera_modo_ar(ligado):
+    novo = 0 if ligado == 1 else 1
+    estado = estado_atual()
+    if estado:
+        estado[0]["ar"][0]["estado"] = novo
+        publish_message(cliente, "/home/arcondicionado", f'{estado[0]["ar"][0]["estado"]} {estado[0]["ar"][0]["temperatura"]} {estado[0]["ar"][0]["modo"]}')
+        salva_estado(estado)
+    return redirect(request.referrer)
+
+
+@app.route("/altera_ar", methods=["POST"])
+def altera_ar():
+    novo = request.form["mode"]
+    estado = estado_atual()
+    if estado:
+        estado[0]["ar"][0]["modo"] = novo
+        salva_estado(estado)
+        publish_message(cliente, "/home/arcondicionado", f'{estado[0]["ar"][0]["estado"]} {estado[0]["ar"][0]["temperatura"]} {estado[0]["ar"][0]["modo"]}')
+    return redirect(request.referrer)
 
 
 if __name__ == "__main__":
     thread = Thread(target=mqtt_setup)
     thread.daemon = True
     thread.start()
-    app.run(host="0.0.0.0", port=80)
-    
+    app.run(host="0.0.0.0", port=50)
